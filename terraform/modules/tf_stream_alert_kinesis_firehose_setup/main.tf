@@ -25,3 +25,7 @@ resource "aws_s3_bucket" "stream_alert_data" {
     Name = "${var.s3_bucket_name}"
   }
 }
+
+resource "aws_glue_catalog_database" "log_format_database" {
+  name = "streamalert_log_format_database"
+}

@@ -19,6 +19,7 @@ import shutil
 import sys
 
 from stream_alert_cli.athena.handler import create_table
+from stream_alert_cli.glue.helpers import create_log_format_tables
 from stream_alert_cli.logger import LOGGER_CLI
 from stream_alert_cli.helpers import check_credentials, continue_prompt, run_command, tf_runner
 from stream_alert_cli.manage_lambda.deploy import deploy
@@ -140,6 +141,10 @@ def _terraform_build(options, config):
         config (CLIConfig): Loaded StreamAlert CLI
     """
     if not terraform_generate(config=config):
+        return
+
+    # Create the glue catalog tables for the enabled logs
+    if not create_log_format_tables(config=config):
         return
 
     # Define the set of custom targets to apply

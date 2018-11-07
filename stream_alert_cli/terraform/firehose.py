@@ -64,7 +64,11 @@ def generate_firehose(logging_bucket, main_dict, config):
             'log_name': log_stream_name,
             'role_arn': '${module.kinesis_firehose_setup.firehose_role_arn}',
             's3_bucket_name': firehose_s3_bucket_name,
-            'kms_key_arn': '${aws_kms_key.server_side_encryption.arn}'
+            'kms_key_arn': '${aws_kms_key.server_side_encryption.arn}',
+            'glue_catalog_db_name': config['global']['infrastructure']
+                                    ['firehose']['catalog_name'],
+            'glue_catalog_table_name': config['global']['infrastructure']
+                                    ['firehose']['catalog_table_prefix']+log_stream_name
         }
 
         # Try to get alarm info for this specific log type
