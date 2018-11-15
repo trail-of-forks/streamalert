@@ -173,6 +173,11 @@ def generate_main(config, init=False):
             logging=logging_bucket
         )
 
+    # Create the glue catalog database for log format tables
+    main_dict['resource']['aws_glue_catalog_database']['log_format_database'] = {
+        'name': config['global']['infrastructure']['firehose']['catalog_name']
+    }
+
     # Setup Firehose Delivery Streams
     generate_firehose(logging_bucket, main_dict, config)
 

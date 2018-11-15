@@ -103,7 +103,8 @@ def _terraform_init(config):
         'aws_s3_bucket.stream_alert_secrets', 'aws_s3_bucket.terraform_remote_state',
         'aws_s3_bucket.streamalerts',
         'aws_kms_key.server_side_encryption', 'aws_kms_alias.server_side_encryption',
-        'aws_kms_key.stream_alert_secrets', 'aws_kms_alias.stream_alert_secrets'
+        'aws_kms_key.stream_alert_secrets', 'aws_kms_alias.stream_alert_secrets',
+        'aws_glue_catalog_database.log_format_database'
     ]
     if not tf_runner(targets=init_targets):
         LOGGER_CLI.error('An error occurred while running StreamAlert init')
