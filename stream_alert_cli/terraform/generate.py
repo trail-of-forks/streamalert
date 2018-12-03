@@ -46,6 +46,9 @@ from stream_alert_cli.terraform.streamalert import generate_stream_alert
 from stream_alert_cli.terraform.s3_events import generate_s3_events
 from stream_alert_cli.terraform.threat_intel_downloader import generate_threat_intel_downloader
 
+
+from stream_alert.athena_partition_refresh.main import AthenaRefresher
+
 RESTRICTED_CLUSTER_NAMES = ('main', 'athena')
 TERRAFORM_VERSIONS = {'application': '~> 0.11.7', 'provider': {'aws': '~> 1.26.0'}}
 
@@ -176,6 +179,15 @@ def generate_main(config, init=False):
     # Setup Firehose Delivery Streams
     generate_firehose(logging_bucket, main_dict, config)
 
+
+    prefix = config['global']['account']['prefix']
+    athena_config = config['lambda']['athena_partition_refresh_config']
+
+    alerts_db_name = athena_config.get(
+        'database_name',
+        AthenaRefresher.STREAMALERT_DATABASE.format(prefix)
+    )
+
     # Configure global resources like Firehose alert delivery and alerts table
     global_module = {
         'source': 'modules/tf_stream_alert_globals',
@@ -186,7 +198,8 @@ def generate_main(config, init=False):
         'alerts_table_read_capacity': (
             config['global']['infrastructure']['alerts_table']['read_capacity']),
         'alerts_table_write_capacity': (
-            config['global']['infrastructure']['alerts_table']['write_capacity'])
+            config['global']['infrastructure']['alerts_table']['write_capacity']),
+        'alerts_db_name': alerts_db_name
     }
 
     if config['global']['infrastructure']['rule_staging'].get('enabled'):
