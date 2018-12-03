@@ -18,8 +18,7 @@ import os
 import shutil
 import sys
 
-from stream_alert_cli.athena.handler import create_table
-from stream_alert_cli.glue.helpers import create_log_format_tables
+from stream_alert_cli.athena.handler import create_table, create_log_tables
 from stream_alert_cli.logger import LOGGER_CLI
 from stream_alert_cli.helpers import check_credentials, continue_prompt, run_command, tf_runner
 from stream_alert_cli.manage_lambda.deploy import deploy
@@ -104,7 +103,7 @@ def _terraform_init(config):
         'aws_s3_bucket.streamalerts',
         'aws_kms_key.server_side_encryption', 'aws_kms_alias.server_side_encryption',
         'aws_kms_key.stream_alert_secrets', 'aws_kms_alias.stream_alert_secrets',
-        'aws_glue_catalog_database.log_format_database'
+        'aws_s3_bucket.stream_alert_data' # need the data bucket to create tables that reference the bucket
     ]
     if not tf_runner(targets=init_targets):
         LOGGER_CLI.error('An error occurred while running StreamAlert init')
@@ -130,6 +129,10 @@ def _terraform_init(config):
     alerts_bucket = '{}.streamalerts'.format(config['global']['account']['prefix'])
     create_table('alerts', alerts_bucket, config)
 
+    # Create the glue catalog tables for the enabled logs
+    if not create_log_tables(config=config):
+        return
+
     LOGGER_CLI.info('Building Remainder Infrastructure')
     tf_runner(refresh=False)
 
@@ -145,7 +148,7 @@ def _terraform_build(options, config):
         return
 
     # Create the glue catalog tables for the enabled logs
-    if not create_log_format_tables(config=config):
+    if not create_log_tables(config=config):
         return
 
     # Define the set of custom targets to apply

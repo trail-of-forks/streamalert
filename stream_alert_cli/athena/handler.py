@@ -24,8 +24,7 @@ from stream_alert_cli.logger import LOGGER_CLI
 
 CREATE_TABLE_STATEMENT = ('CREATE EXTERNAL TABLE {table_name} ({schema}) '
                           'PARTITIONED BY (dt string) '
-                          'ROW FORMAT SERDE \'org.openx.data.jsonserde.JsonSerDe\' '
-                          'WITH SERDEPROPERTIES (\'ignore.malformed.json\' = \'true\') '
+                          'STORED AS PARQUET '
                           'LOCATION \'s3://{bucket}/{table_name}/\'')
 
 MAX_QUERY_LENGTH = 262144
@@ -263,6 +262,25 @@ def create_table(table, bucket, config, schema_override=None):
 
     LOGGER_CLI.info('The %s table was successfully created!', sanitized_table_name)
 
+
+def create_log_tables(config):
+    if not config['global']['infrastructure'].get('firehose', {}).get('enabled'):
+        return
+
+    firehose_config = config['global']['infrastructure']['firehose']
+    firehose_s3_bucket_suffix = firehose_config.get('s3_bucket_suffix', 'streamalert.data')
+    firehose_s3_bucket_name = '{}.{}'.format(config['global']['account']['prefix'],
+                                             firehose_s3_bucket_suffix)
+
+    enabled_logs = FirehoseClient.load_enabled_log_sources(
+        config['global']['infrastructure']['firehose'],
+        config['logs']
+    )
+
+    for log_stream_name, _ in enabled_logs.iteritems():
+        create_table(log_stream_name, firehose_s3_bucket_name, config)
+
+    return True
 
 def athena_handler(options, config):
     """Main Athena handler
