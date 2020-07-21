@@ -88,7 +88,7 @@ pyparsing==2.3.0
 python-dateutil==2.7.5
 python-jose==2.0.2
 pytz==2018.7
-PyYAML==3.13
+PyYAML==5.1
 requests-toolbelt==0.8.0
 responses==0.10.4
 rsa==4.0
