@@ -91,7 +91,7 @@ pytz==2018.7
 PyYAML==3.13
 requests-toolbelt==0.8.0
 responses==0.10.4
-rsa==4.0
+rsa==4.7
 s3transfer==0.1.13
 scandir==1.9.0
 singledispatch==3.4.0.3
