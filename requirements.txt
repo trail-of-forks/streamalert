@@ -39,7 +39,7 @@ backports.weakref==1.0.post1
 boto==2.49.0
 botocore==1.12.50
 cachetools==3.0.0
-certifi==2018.10.15
+certifi==2022.12.7
 cffi==1.11.5
 chainmap==1.0.2
 chardet==3.0.4
