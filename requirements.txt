@@ -20,7 +20,7 @@ nose-timer==0.7.3
 pathlib2==2.3.2
 pyfakefs==3.5.3
 pylint==1.9.3
-requests==2.20.1
+requests==2.31.0
 Sphinx==1.8.2
 sphinx-rtd-theme==0.4.2
 ushlex==0.99.1
